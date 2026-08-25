@@ -1,0 +1,35 @@
+# =============================================================================
+# Build and run outputs of the Python interface.
+#
+# obj/, lib/ and __pycache__/ are produced by `make` and by the interpreter and
+# are removed by `make clean`; the scheduler writes gmg_py_<jobid>.out wherever
+# the job was submitted from.
+#
+# Job scripts (*.slurm) and the alternative input PARA_INPUT_np2.inp stay local:
+# they are site- and run-specific, so they are ignored rather than tracked.
+# Note that ignoring them only works while they are untracked -- a path already
+# in the index is unaffected by these rules and has to be dropped with
+# `git rm --cached` first.
+#
+# Deliberately NOT ignored:
+#   run/PARA_INPUT.inp
+#                   the reference problem definition, not build output.
+#   environment.yml, setup_env.sh
+#                   part of the deliverable.
+#
+# The repository root .gitignore already covers *.o, *.so and obj/; the entries
+# below repeat the ones that matter here so this directory is self-describing.
+# =============================================================================
+obj/
+lib/
+__pycache__/
+*.pyc
+
+# Scheduler output of the job scripts
+gmg_py_*.out
+
+# Job scripts. The leading * is required: a bare `.slurm` matches only a file
+# named exactly that, not every name ending in .slurm.
+*.slurm
+
+PARA_INPUT_np2.inp

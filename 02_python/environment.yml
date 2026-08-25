@@ -1,0 +1,47 @@
+# =============================================================================
+# PaScaL_POISSON_GMG - Python GPU environment
+#
+#   Create:    conda env create -f environment.yml
+#   Activate:  conda activate pascal-gmg-gpu
+#
+#   Normally you do not run those by hand; use setup_env.sh, which also loads the
+#   toolchain and builds mpi4py against the right MPI.
+#
+# This file is deliberately site-independent: no cluster paths, no module names.
+# On another machine the two commands above are the whole setup, plus the mpi4py
+# build below against whatever CUDA-aware MPI is local.  Everything specific to
+# the Neuron cluster lives in setup_env.sh.
+#
+# conda provides only python + pip; the packages are installed as pip wheels.
+#
+# mpi4py is intentionally NOT listed here.  It must be built from source against
+# the same MPI that lib/libgmg_capi.so was linked with.  The solver calls
+# MPI_COMM_WORLD directly -- it builds its own cartesian topology inside
+# mpi_topology_create() rather than receiving communicators from Python -- so
+# the MPI that mpi4py initialises and the MPI the solver collectives run on must
+# be one and the same library.  A conda-forge mpi4py would initialise a
+# different one, and the first MPI_Cart_create inside the solver would run on a
+# world that Python never initialised.
+#
+#   OMPI_CC=gcc MPICC=$(which mpicc) pip install --no-binary=mpi4py mpi4py
+#
+# The dependency set is identical to PaScaL_POISSON_FFT's, so an existing
+# pascal-poisson-gpu env can be reused instead:
+#
+#   ENV_NAME=pascal-poisson-gpu source setup_env.sh
+# =============================================================================
+name: pascal-gmg-gpu
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - numpy
+      - cupy-cuda12x        # CuPy for CUDA 12.x
+      # Pin the JIT compiler (NVRTC) to CUDA 12 so CuPy does not pick up a
+      # system CUDA 13 toolkit on the compute nodes.
+      - nvidia-cuda-nvrtc-cu12
+      - nvidia-nvjitlink-cu12

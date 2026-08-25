@@ -1,0 +1,71 @@
+# =============================================================================
+# PaScaL_POISSON_GMG - Python example, 1 process
+#
+#   mpirun -n 1 python example/poisson3d_gmg.py PARA_INPUT.inp
+#
+# Same key-value format the C driver reads (00_C/run/PARA_INPUT.inp), so this
+# file also works with 00_C/run/test_poisson.  The keys below the separator are
+# used by the Python example only; the C driver ignores unknown keys.
+# =============================================================================
+
+# meshes
+nx 128
+ny 128
+nz 128
+
+# origin
+ox -0.5
+oy -0.5
+oz -0.5
+
+# length
+lx 2.0
+ly 2.0
+lz 2.0
+
+# mesh_stretch
+# Must be 1.0: the analytic solution of the Python example is an exact
+# eigenvector of the discrete operator only on a uniform grid.
+ax 1.0
+ay 1.0
+az 1.0
+
+# procs
+npx 1
+npy 1
+npz 1
+
+# control
+maxiteration 10
+tolerance 1.0e-10
+number_of_vcycles 100
+number_of_levels 6
+aggregation_method 0
+aggregation_level 0
+omega_sor 1.6
+
+# coefficients
+alpha_x 1.0
+alpha_y 1.0
+alpha_z 1.0
+
+# -----------------------------------------------------------------------------
+# Python example only
+# -----------------------------------------------------------------------------
+
+# Mode number per direction of the exact solution
+#   p_exact = prod_d sin(mode_d * pi * (x_d - o_d) / l_d)
+# With the origin and length above, mode 2 gives cos(pi x) cos(pi y) cos(pi z),
+# the same field the C driver uses.
+mode_x 2
+mode_y 2
+mode_z 2
+
+# Pass threshold for the RMS error.  A converged solve leaves ~1e-10 here; a
+# right-hand side built from the continuous eigenvalue instead of the discrete
+# one would leave ~2e-4.
+rms_tolerance 1.0e-8
+
+# Benchmark loop
+bench_warmup 2
+bench_iters 5
